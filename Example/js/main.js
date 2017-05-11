@@ -24,10 +24,13 @@ $(function() {
 
         setTimeout(function(){ 
             console.log("Updating"); 
-            //graph = {"nodes": [graph.nodes[0]], "links": []};
-            //chart = d3.select("#vis").data([graph]).call(net);
-            net.nodeFill("rgb(255, 0, 0)");
+            graph = {"nodes": [graph.nodes[0], graph.nodes[1]], "links": [graph.links[0]]};
+            chart = d3.select("#vis").data([graph]).call(net);
+            net.nodeFill("rgb(125, 125, 125)");
             net.linkStrokeWidth(10);
+            net.linkStroke("black");
+            net.fontSize(32);
+            //net.strength(-20);
         }, 2000);
         
     });

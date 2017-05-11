@@ -11,8 +11,7 @@ var network = function() {
         bottom: 40,
         left: 30,
         right: 30,
-    },
-    strength = -400;
+    };
 
     // Defaults for elements in the graph
     var linkStroke = "#969696",
@@ -27,12 +26,14 @@ var network = function() {
     // D3 Physics simulation
     var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody().strength(strength))
-    .force("center", d3.forceCenter(width / 2, height / 2));
+    .force("charge", d3.forceManyBody().strength(-400))
+    .force("center", d3.forceCenter(width / 2, height / 2))
+    .alphaTarget(1);
+    
 
     var viz = function(selection) {
         selection.each(function(graph) {
-            
+
             var ele = d3.select(this);
             var svg = ele.selectAll("svg").data([graph]);
 
@@ -40,7 +41,7 @@ var network = function() {
             console.log("Visualizing");
             simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function(d) { return d.id; }))
-                .force("charge", d3.forceManyBody().strength(strength))
+                .force("charge", d3.forceManyBody().strength(-400))
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
             // Height/width of the drawing area itself
@@ -51,71 +52,82 @@ var network = function() {
                 d.source = d.source_id;    
                 d.target = d.target_id;
             });
-
-            var link = svg.append("g")
-            .style("stroke", "#aaa")
-            .selectAll("line")
-            .data(graph.links)
-            .enter().append("line");
-
-            var node = svg.append("g")
-            .attr("class", "nodes")
-            .selectAll("circle")
-            .data(graph.nodes)
-            .enter().append("circle")
-            .attr("r", 6)
-            .call(d3.drag()
-                .on("start", dragstarted)
-                .on("drag", dragged)
-                .on("end", dragended));
-
-            var label = svg.append("g")
-            .attr("class", "labels")
-            .selectAll("text")
-            .data(graph.nodes)
-            .enter().append("text")
-            .attr("class", "label")
-            .text(function(d) { return d.name; });
             
-            simulation
-                .nodes(graph.nodes)
-                .on("tick", ticked);
+            
+            // Restart the simulation from scratch.
+            function restart() {
+                
+                // Render links between nodes
+                var link = svg.append("g")
+                .attr('class', 'link')
+                .style("stroke", linkStroke)
+                .style('stroke-width', linkStrokeWidth)
+                .selectAll("line")
+                .data(graph.links)
+                .enter().append("line");
+                
+                
+                // Render nodes
+                var node = svg.append("g")
+                .attr("class", "nodes")
+                .selectAll("circle")
+                .data(graph.nodes)
+                .enter().append("circle")
+                .attr("r", 6)
+                .call(d3.drag()
+                      .on("start", dragstarted)
+                      .on("drag", dragged)
+                      .on("end", dragended));
+                
+                // Labels on the nodes
+                var label = svg.append("g")
+                .attr("class", "labels")
+                .selectAll("text")
+                .data(graph.nodes)
+                .enter().append("text")
+                .attr("class", "label")
+                .text(function(d) { return d.name; });
+                
+                simulation
+                    .nodes(graph.nodes)
+                    .on("tick", ticked);
 
-            simulation.force("link")
-                .links(graph.links);
+                simulation.force("link")
+                    .links(graph.links);
+                
+                // Render links, nodes and labels on every tick
+                function ticked() {
 
-            simulation.force("charge", d3.forceManyBody().strength(strength));
+                    link
+                        .attr("x1", function(d) { return d.source.x; })
+                        .attr("y1", function(d) { return d.source.y; })
+                        .attr("x2", function(d) { return d.target.x; })
+                        .attr("y2", function(d) { return d.target.y; })
+                        .attr('stroke', linkStroke)
+                        .attr('stroke-width', linkStrokeWidth);
 
-            node.exit().remove();
-            link.exit().remove();
-            label.exit().remove();
-            simulation.alpha(1).restart();
+                    node
+                        .attr("r", nodeRadius)
+                        .style("fill", nodeFill)
+                        .style("stroke", nodeStroke)
+                        .style("stroke-width", nodeStrokeWidth)
+                        .attr("cx", function (d) { return d.x+6; })
+                        .attr("cy", function(d) { return d.y-6; });
 
-            // Render links, nodes and labels on every tick
-            function ticked() {
-
-                link
-                    .attr("x1", function(d) { return d.source.x; })
-                    .attr("y1", function(d) { return d.source.y; })
-                    .attr("x2", function(d) { return d.target.x; })
-                    .attr("y2", function(d) { return d.target.y; })
-                    .attr('stroke', linkStroke)
-                    .attr('stroke-width', linkStrokeWidth);
-
-                node
-                    .attr("r", nodeRadius)
-                    .style("fill", nodeFill)
-                    .style("stroke", nodeStroke)
-                    .style("stroke-width", nodeStrokeWidth)
-                    .attr("cx", function (d) { return d.x+6; })
-                    .attr("cy", function(d) { return d.y-6; });
-
-                label
-                    .attr("x", function(d) { return d.x; })
-                    .attr("y", function (d) { return d.y; })
-                    .style("font-size", fontSize)
-                    .style("fill", textFill);
+                    label
+                        .attr("x", function(d) { return d.x; })
+                        .attr("y", function (d) { return d.y; })
+                        .style("font-size", fontSize)
+                        .style("fill", textFill);
+                }
             }
+            
+            d3.selectAll('.nodes').remove();
+            d3.selectAll('.link').remove();
+            d3.selectAll('.labels').remove();
+
+            // Restart the simulation everytime the data is changed.
+            restart();
         });
     }
 
@@ -132,7 +144,7 @@ var network = function() {
     }
 
     function dragended(d) {
-        if (!d3.event.active) simulation.alphaTarget(0);
+        if (!d3.event.active) simulation.alphaTarget(1);
         d.fx = null;
         d.fy = null;
     }
@@ -147,12 +159,6 @@ var network = function() {
     viz.width = function(value) {
         if (!arguments.length) return width;
         width = value;
-        return viz;
-    };
-    
-    viz.strength = function(value) {
-        if (!arguments.length) return strength;
-        strength = value;
         return viz;
     };
 

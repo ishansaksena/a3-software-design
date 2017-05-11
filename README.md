@@ -55,7 +55,8 @@ And to check if you prepped the data correctly, use:
 
 ### Rendering the graph
 ```
-// 1. Prepare your data as described above.
+// 1. Prepare your data as described above. 
+// This code probably goes inside d3.json("data.json", function(error, graph) {});
 
 // 2. Store a reference to the network closure. 
 var net = network();
@@ -84,13 +85,13 @@ The chart has the following attributes. The default values and the descriptions 
 - **`height`** = 500
 > Height of the chart in pixels. 
 - **`linkStroke`** = "#969696"
-> Color of the links between the nodes. Takes in hexadecimal RGB value.
+> Color of the links. Takes in an RGB value.
 - **`linkStrokeWidth`** = '3px'
-> Thickness of the links between nodes in pixels. 
+> Thickness of the links in pixels. 
 - **`nodeRadius`** = 20
 > Radius of the node circles in pixels. 
 - **`nodeFill`** = "#d9d9d9"
-> Color of the nodes in hexadecimal RGB value.
+> Color of the nodes, takes in an RGB value.
 - **`nodeStroke`** = "#969696"
 > Color of the border of the nodes as an RGB value.
 - **`nodeStrokeWidth`** = "2px"
@@ -98,5 +99,4 @@ The chart has the following attributes. The default values and the descriptions 
 - **`fontSize`** = '20px'
 > Font size of the text on the nodes in pixels.
 - **`textFill`** = "#4393c3"
-> Color of the text on the nodes. 
-
+> Color of the text on the nodes, as an RGB value. 

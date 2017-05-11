@@ -26,7 +26,7 @@ $(function() {
             console.log("Updating"); 
             //graph = {"nodes": [graph.nodes[0]], "links": []};
             //chart = d3.select("#vis").data([graph]).call(net);
-            net.nodeFill("rgb(255, 0, 0)").strength(0);
+            net.nodeFill("rgb(255, 0, 0)");
             net.linkStrokeWidth(10);
         }, 2000);
         

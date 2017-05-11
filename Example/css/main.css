@@ -1,0 +1,27 @@
+body {
+    width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+   font-weight: 300;
+}
+
+#sampleData>pre {
+    background-color: black;
+    color: antiquewhite;
+    width: 200px;
+}
+
+.instructions {
+    font-style: bold;
+}
+
+/* D3 styling */
+.title {
+  text-anchor: middle;
+}
+
+.chart {
+  display: inline-block;
+    
+}

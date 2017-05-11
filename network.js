@@ -12,7 +12,7 @@ var network = function() {
         left: 30,
         right: 30,
     },
-    charge = -400;
+    strength = -400;
 
     // Defaults for elements in the graph
     var linkStroke = "#969696",
@@ -27,12 +27,12 @@ var network = function() {
     // D3 Physics simulation
     var simulation = d3.forceSimulation()
     .force("link", d3.forceLink().id(function(d) { return d.id; }))
-    .force("charge", d3.forceManyBody().strength(-400))
+    .force("charge", d3.forceManyBody().strength(strength))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
     var viz = function(selection) {
         selection.each(function(graph) {
-
+            
             var ele = d3.select(this);
             var svg = ele.selectAll("svg").data([graph]);
 
@@ -40,7 +40,7 @@ var network = function() {
             console.log("Visualizing");
             simulation = d3.forceSimulation()
                 .force("link", d3.forceLink().id(function(d) { return d.id; }))
-                .force("charge", d3.forceManyBody().strength(-400))
+                .force("charge", d3.forceManyBody().strength(strength))
                 .force("center", d3.forceCenter(width / 2, height / 2));
 
             // Height/width of the drawing area itself
@@ -77,8 +77,6 @@ var network = function() {
             .attr("class", "label")
             .text(function(d) { return d.name; });
             
-            link.exit().remove();
-
             simulation
                 .nodes(graph.nodes)
                 .on("tick", ticked);
@@ -86,8 +84,16 @@ var network = function() {
             simulation.force("link")
                 .links(graph.links);
 
-            // Render links, nodes and labels
+            simulation.force("charge", d3.forceManyBody().strength(strength));
+
+            node.exit().remove();
+            link.exit().remove();
+            label.exit().remove();
+            simulation.alpha(1).restart();
+
+            // Render links, nodes and labels on every tick
             function ticked() {
+
                 link
                     .attr("x1", function(d) { return d.source.x; })
                     .attr("y1", function(d) { return d.source.y; })
@@ -144,9 +150,9 @@ var network = function() {
         return viz;
     };
     
-    viz.charge = function(value) {
-        if (!arguments.length) return charge;
-        charge = value;
+    viz.strength = function(value) {
+        if (!arguments.length) return strength;
+        strength = value;
         return viz;
     };
 
@@ -197,6 +203,5 @@ var network = function() {
         textFill = value;
         return viz;
     };
-
     return viz;
 }

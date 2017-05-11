@@ -59,7 +59,7 @@ In the following, the nodes refer the circles and links refer to the lines conne
 
 RGB values may be specified as `"#ff0000"` or `"rgb(255, 0, 0)"`
 Pixel values may be specified as `960` or `"2px"`
-The chart has the following attributes. The default values and the descriptions are shown next to the property names.   
+The chart has the following attributes. The default values and the descriptions are shown next to the attribute names.   
 
 - **`width`** = 960
 > Width of the chart in pixels. 
@@ -84,7 +84,19 @@ The chart has the following attributes. The default values and the descriptions 
 
 ### Rendering the graph
 ```
+// 1. Prepare your data as described above.
+
+// 2. Store a reference to the network closure. 
 var net = network();
+
+// 3. Set attributes for the data.
 net.width(600).height(500);
-net(svg, graph);
+
+// 4. Pass in the element to render the graph in and the data.
+var net = network().width(600).height(500);
+var chart = d3.select("#vis").data([graph]).call(net);
+// Alternatively: net(chart);
+
+// 5. Update attributes
+net.nodeFill("rgb(255, 0, 0)");
 ```

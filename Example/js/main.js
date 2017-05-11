@@ -16,7 +16,6 @@ $(function() {
         
         // Pass in the element to render the graph in and the data.
         var net = network().width(600).height(500);
-        //net(svg, graph);
         var chart = d3.select("#vis").data([graph]).call(net);
         
         // Changing default values

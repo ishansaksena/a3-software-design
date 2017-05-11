@@ -22,7 +22,8 @@ $(function() {
         // Can also be done before calling net(svg, graph) to render the graph
         // Can be chained
 
-        setTimeout(function(){ console.log("Updating"); 
+        setTimeout(function(){ 
+            console.log("Updating"); 
             //graph = {"nodes": [graph.nodes[0]], "links": []};
             //chart = d3.select("#vis").data([graph]).call(net);
             net.nodeFill("rgb(255, 0, 0)").strength(0);

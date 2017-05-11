@@ -1,12 +1,14 @@
 # a3-software-design
-INFO474 - Data visualization: Making reusable d3.js charts
+Ishan Saksena  
+INFO474 - Data v isualization  
+Spring 2017  
+Making reusable d3.js charts    
 
-This module helps you make network visualizations. These are excellent to show relationships between entities. An example is shown below.  
+This module helps you make network visualizations. These are excellent to show relationships between entities. It also allows users to drag and reconfigure the visualization. An example is shown below.  
 
 ![Graph Visualization](images/graphViz.gif "Network visualization")
 
-
-## Prepping the Data 
+## Preparing the Data 
 There are two types of information encoded. The individual nodes present in the visualization and the relationships between them. You have to pass in a JSON object with a list of nodes and links as in the following: 
 
 ```
@@ -42,17 +44,33 @@ There are two types of information encoded. The individual nodes present in the 
   ]
 }
 ```
->
-**Protip** : There's two different types of arrays in the above object. While prepping your data, you can create the `node` and `links` arrays seperately and combine them with:  
-```
-var graph = {"nodes": nodes,"links": links};
-```  
+`nodes` is the key to a list of nodes. The `name` field is rendered as text on the nodes. `links` is a list of pairs of nodes between which a link is to be drawn. The `source_id` and the `target_id` refer to the IDs of the nodes. 
+
+> **Tip** : There's two different types of arrays in the above object. While prepping your data, you can create the `node` and `links` arrays seperately and combine them with:  
+> ``` var graph = {"nodes": nodes,"links": links}; ```  
 And to check if you prepped the data correctly, use:  
-```
-console.log(JSON.stringify(graph, null, 4));
-```
+> ``` console.log(JSON.stringify(graph, null, 4));```
 
 ## Building the visualization
+
+### Rendering the graph
+```
+// 1. Prepare your data as described above.
+
+// 2. Store a reference to the network closure. 
+var net = network();
+
+// 3. Set attributes for the visualization.
+net.width(600).height(500);
+
+// 4. Pass in the element to render the graph in and the data.
+var chart = d3.select("#vis").data([graph]).call(net);
+
+// 5. Update attributes
+net.nodeFill("rgb(255, 0, 0)");
+
+// 6. $$$
+```
 
 ### Setting dimensions
 In the following, the nodes refer the circles and links refer to the lines connecting them. You can set these attributes with `net.<dimension>(<value>);`
@@ -82,21 +100,3 @@ The chart has the following attributes. The default values and the descriptions 
 - **`textFill`** = "#4393c3"
 > Color of the text on the nodes. 
 
-### Rendering the graph
-```
-// 1. Prepare your data as described above.
-
-// 2. Store a reference to the network closure. 
-var net = network();
-
-// 3. Set attributes for the data.
-net.width(600).height(500);
-
-// 4. Pass in the element to render the graph in and the data.
-var net = network().width(600).height(500);
-var chart = d3.select("#vis").data([graph]).call(net);
-// Alternatively: net(chart);
-
-// 5. Update attributes
-net.nodeFill("rgb(255, 0, 0)");
-```

@@ -30,81 +30,87 @@ var network = function() {
     .force("charge", d3.forceManyBody().strength(-400))
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-    var viz = function(svg, graph) {
-        svg.attr('width', width).attr('height', height);
-        console.log("Visualizing");
-        simulation = d3.forceSimulation()
-            .force("link", d3.forceLink().id(function(d) { return d.id; }))
-            .force("charge", d3.forceManyBody().strength(-400))
-            .force("center", d3.forceCenter(width / 2, height / 2));
+    var viz = function(selection) {
+        selection.each(function(graph) {
 
-        // Height/width of the drawing area itself
-        var chartHeight = height - margin.bottom - margin.top;
-        var chartWidth = width - margin.left - margin.right;
+            var ele = d3.select(this);
+            var svg = ele.selectAll("svg").data([graph]);
 
-        graph.links.forEach(function(d){
-            d.source = d.source_id;    
-            d.target = d.target_id;
+            svg.attr('width', width).attr('height', height);
+            console.log("Visualizing");
+            simulation = d3.forceSimulation()
+                .force("link", d3.forceLink().id(function(d) { return d.id; }))
+                .force("charge", d3.forceManyBody().strength(-400))
+                .force("center", d3.forceCenter(width / 2, height / 2));
+
+            // Height/width of the drawing area itself
+            var chartHeight = height - margin.bottom - margin.top;
+            var chartWidth = width - margin.left - margin.right;
+
+            graph.links.forEach(function(d){
+                d.source = d.source_id;    
+                d.target = d.target_id;
+            });
+
+            var link = svg.append("g")
+            .style("stroke", "#aaa")
+            .selectAll("line")
+            .data(graph.links)
+            .enter().append("line");
+
+            var node = svg.append("g")
+            .attr("class", "nodes")
+            .selectAll("circle")
+            .data(graph.nodes)
+            .enter().append("circle")
+            .attr("r", 6)
+            .call(d3.drag()
+                .on("start", dragstarted)
+                .on("drag", dragged)
+                .on("end", dragended));
+
+            var label = svg.append("g")
+            .attr("class", "labels")
+            .selectAll("text")
+            .data(graph.nodes)
+            .enter().append("text")
+            .attr("class", "label")
+            .text(function(d) { return d.name; });
+            
+            link.exit().remove();
+
+            simulation
+                .nodes(graph.nodes)
+                .on("tick", ticked);
+
+            simulation.force("link")
+                .links(graph.links);
+
+            // Render links, nodes and labels
+            function ticked() {
+                link
+                    .attr("x1", function(d) { return d.source.x; })
+                    .attr("y1", function(d) { return d.source.y; })
+                    .attr("x2", function(d) { return d.target.x; })
+                    .attr("y2", function(d) { return d.target.y; })
+                    .attr('stroke', linkStroke)
+                    .attr('stroke-width', linkStrokeWidth);
+
+                node
+                    .attr("r", nodeRadius)
+                    .style("fill", nodeFill)
+                    .style("stroke", nodeStroke)
+                    .style("stroke-width", nodeStrokeWidth)
+                    .attr("cx", function (d) { return d.x+6; })
+                    .attr("cy", function(d) { return d.y-6; });
+
+                label
+                    .attr("x", function(d) { return d.x; })
+                    .attr("y", function (d) { return d.y; })
+                    .style("font-size", fontSize)
+                    .style("fill", textFill);
+            }
         });
-
-        var link = svg.append("g")
-        .style("stroke", "#aaa")
-        .selectAll("line")
-        .data(graph.links)
-        .enter().append("line");
-
-        var node = svg.append("g")
-        .attr("class", "nodes")
-        .selectAll("circle")
-        .data(graph.nodes)
-        .enter().append("circle")
-        .attr("r", 6)
-        .call(d3.drag()
-              .on("start", dragstarted)
-              .on("drag", dragged)
-              .on("end", dragended));
-
-        var label = svg.append("g")
-        .attr("class", "labels")
-        .selectAll("text")
-        .data(graph.nodes)
-        .enter().append("text")
-        .attr("class", "label")
-        .text(function(d) { return d.name; });
-        
-        link.exit().remove();
-
-        simulation
-            .nodes(graph.nodes)
-            .on("tick", ticked);
-
-        simulation.force("link")
-            .links(graph.links);
-
-        // Render links, nodes and labels
-        function ticked() {
-            link
-                .attr("x1", function(d) { return d.source.x; })
-                .attr("y1", function(d) { return d.source.y; })
-                .attr("x2", function(d) { return d.target.x; })
-                .attr("y2", function(d) { return d.target.y; })
-                .attr('stroke', linkStroke)
-                .attr('stroke-width', linkStrokeWidth);
-
-            node
-                .attr("r", nodeRadius)
-                .style("fill", nodeFill)
-                .style("stroke", nodeStroke)
-                .style("stroke-width", nodeStrokeWidth)
-                .attr("cx", function (d) { return d.x+6; })
-                .attr("cy", function(d) { return d.y-6; });
-
-            label
-                .attr("x", function(d) { return d.x; })
-                .attr("y", function (d) { return d.y; })
-                .style("font-size", fontSize)
-                .style("fill", textFill);
-        }
     }
 
     // Interactions for dragging nodes

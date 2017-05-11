@@ -16,14 +16,12 @@ $(function() {
         
         // Pass in the element to render the graph in and the data.
         var net = network().width(600).height(500);
-        net(svg, graph);
+        //net(svg, graph);
+        var chart = d3.select("#vis").data([graph]).call(net);
+        console.log(graph);
         
         // Changing default values
         // Can also be done before calling net(svg, graph) to render the graph
         // Can be chained
-        net.nodeRadius(20);
-        net.nodeStrokeWidth(3);
-        
-        net(svg, {"nodes": graph.nodes, 'links': []});
     });
 });

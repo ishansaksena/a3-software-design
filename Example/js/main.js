@@ -15,8 +15,7 @@ $(function() {
         if (error) throw error;
         
         // Pass in the element to render the graph in and the data.
-        var net = network();
-        net.width(600).height(500);
+        var net = network().width(600).height(500);
         net(svg, graph);
         
         // Changing default values
@@ -24,5 +23,7 @@ $(function() {
         // Can be chained
         net.nodeRadius(20);
         net.nodeStrokeWidth(3);
+        
+        net(svg, {"nodes": graph.nodes, 'links': []});
     });
 });

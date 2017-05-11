@@ -11,7 +11,8 @@ var network = function() {
         bottom: 40,
         left: 30,
         right: 30,
-    };
+    },
+    charge = -400;
 
     // Defaults for elements in the graph
     var linkStroke = "#969696",
@@ -31,7 +32,7 @@ var network = function() {
 
     var viz = function(svg, graph) {
         svg.attr('width', width).attr('height', height);
-        
+        console.log("Visualizing");
         simulation = d3.forceSimulation()
             .force("link", d3.forceLink().id(function(d) { return d.id; }))
             .force("charge", d3.forceManyBody().strength(-400))
@@ -45,7 +46,6 @@ var network = function() {
             d.source = d.source_id;    
             d.target = d.target_id;
         });
-
 
         var link = svg.append("g")
         .style("stroke", "#aaa")
@@ -71,6 +71,8 @@ var network = function() {
         .enter().append("text")
         .attr("class", "label")
         .text(function(d) { return d.name; });
+        
+        link.exit().remove();
 
         simulation
             .nodes(graph.nodes)
@@ -133,6 +135,12 @@ var network = function() {
     viz.width = function(value) {
         if (!arguments.length) return width;
         width = value;
+        return viz;
+    };
+    
+    viz.charge = function(value) {
+        if (!arguments.length) return charge;
+        charge = value;
         return viz;
     };
 
